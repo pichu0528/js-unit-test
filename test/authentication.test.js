@@ -1,14 +1,25 @@
 import {Authentication} from "../src/authentication";
-// import {Otp} from '../src/otp';
+import * as Otp from '../src/otp';
+import {Profile} from '../src/profile';
 
-// jest.spyOn(Otp.prototype, 'get_token').mockReturnValue('000000');
-let authentication = new Authentication();
+jest.mock('../src/otp');
+jest.mock('../src/profile');
 
-describe('authenticate account is valid', function () {
+const authentication = new Authentication();
+
+function mockProfile() {
+    return () => {
+        return ({
+            get_password: () => '91'
+        })
+    };
+}
+
+describe('authenticate account', function () {
     beforeEach(() => {
-        authentication.getPassword = () => '91';
-        authentication.getToken = () => '000000';
-    })
+        Profile.mockImplementationOnce(mockProfile());
+        Otp.get_token.mockReturnValue('000000');
+    });
     it('should be valid', () => {
         shouldValidateAccountPasswordTo('joey', '91000000', true);
     });
