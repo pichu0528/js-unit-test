@@ -19,16 +19,33 @@ describe('authenticate account', function () {
     beforeEach(() => {
         Profile.mockImplementationOnce(mockProfile());
         Otp.get_token.mockReturnValue('000000');
+        authentication.notify = jest.fn();
     });
     it('should be valid', () => {
-        shouldValidateAccountPasswordTo('joey', '91000000', true);
+        const expected = authenticateAccount('joey', '91000000');
+        shouldExpectedBe(expected, true);
+        shouldNotNotifyOnValid();
     });
     it('should be invalid', () => {
-        shouldValidateAccountPasswordTo('mei', '99', false);
+        const expected = authenticateAccount('mei', 'wrong password');
+        shouldExpectedBe(expected, false);
+        shouldNotifyOnInvalid();
     });
 
 });
 
-const shouldValidateAccountPasswordTo = (account, password, result) => {
-    expect(authentication.is_valid(account, password)).toBe(result);
+function shouldNotNotifyOnValid() {
+    expect(authentication.notify).not.toBeCalled();
+}
+
+function shouldNotifyOnInvalid() {
+    expect(authentication.notify).toBeCalledWith(expect.any(String));
+}
+
+function authenticateAccount(account, password) {
+    return authentication.is_valid(account, password);
+}
+
+const shouldExpectedBe = (expected, result) => {
+    expect(expected).toBe(result);
 }

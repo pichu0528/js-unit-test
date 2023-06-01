@@ -14,9 +14,15 @@ export class Authentication {
         if (valid_password === password) {
             return true;
         } else {
+            this.notify(`account:${account} login failed`);
             return false;
         }
     }
+
+    notify(message) {
+        return message;
+    }
+
     getPassword(account) {
         const profile = new Profile();
         return profile.get_password(account);
